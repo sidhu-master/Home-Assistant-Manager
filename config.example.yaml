@@ -1,0 +1,22 @@
+# HA Manager 配置文件
+
+# Home Assistant 连接配置
+ha:
+  url: "http://192.168.56.1:8123"
+  token: "your-ha-token-here"
+
+# 设备配置
+# 在这里配置你HA中的设备 entity_id
+devices:
+  temperature_sensor:
+    - name: "客厅温湿度计"
+      entity_id: "sensor.miaomiaoce_t8_e0e5_temperature"
+      humidity_entity_id: "sensor.miaomiaoce_t8_e0e5_relative_humidity"
+      battery_entity_id: "sensor.miaomiaoce_t8_e0e5_battery_level"
+
+  air_purifier:
+    - name: "客厅空气净化器"
+      switch_entity_id: "switch.jdjz_kj410_0072_switch_status"
+      fan_entity_id: "fan.jdjz_kj410_0072_air_purifier"
+      pm25_entity_id: "sensor.jdjz_kj410_0072_pm25_density"
+      filter_entity_id: "sensor.jdjz_kj410_0072_filter_life_level"

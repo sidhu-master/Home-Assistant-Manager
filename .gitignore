@@ -1,0 +1,15 @@
+# 忽略敏感配置
+config.yaml
+
+# Node / Python
+node_modules/
+__pycache__/
+*.pyc
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
