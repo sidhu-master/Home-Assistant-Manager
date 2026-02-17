@@ -1,6 +1,6 @@
 ---
 name: ha-manager
-description: Home Assistant 设备管理器。自动发现 HA 设备、智能调度设备 Skills、按需从远程仓库下载设备 Skill。首次使用时自动引导配置，缺少参数时通过聊天窗口询问用户。
+description: Home Assistant 设备管理器。自动发现 HA 设备、智能调度设备 Skills、首次配置后自动初始化所有设备 Skills。缺少参数时通过聊天窗口询问用户。
 ---
 
 # Home Assistant Manager
@@ -9,6 +9,7 @@ description: Home Assistant 设备管理器。自动发现 HA 设备、智能调
 
 - 🔍 **设备发现**: 自动扫描 HA 中的所有设备，识别厂商和型号
 - 🧠 **智能调度**: 理解用户意图，分发给对应设备 Skills
+- ⚡ **自动初始化**: 配置完成后自动下载/生成所有设备 Skills
 - 📦 **按需下载**: 根据设备型号从远程仓库动态下载 Skill
 - 🔄 **版本检查**: 检查远程仓库更新，提醒用户
 - 🤖 **自动安装**: 首次使用自动引导配置，缺少参数时询问用户
@@ -45,9 +46,58 @@ HA Manager: ✅ 已保存
 HA Manager: 🔄 验证连接...
           ✅ 配置完成！
           
-          现在可以使用了:
-          - "有哪些设备？"
-          - "现在温度多少？"
+          🔍 正在初始化设备 Skills...
+          - 发现设备: 米家温湿度计 T8
+            → 下载 temperature-sensor/mijia-t8
+          - 发现设备: 空气净化器
+            → 使用通用模板 climate
+          
+          ✅ 初始化完成！共 2 个设备
+```
+
+## 自动初始化流程
+
+配置完成 Token 后自动执行：
+
+```
+1. 读取 HA 所有实体 (api/states)
+2. 识别每个设备的:
+   - device_type (sensor, light, switch, climate...)
+   - manufacturer (厂商)
+   - model (型号)
+3. 对每个设备:
+   a. 请求 GitHub API 精确匹配:
+      GET /repos/{owner}/device-skills/contents/{type}/{manufacturer}-{model}/SKILL.md
+   b. 找不到 → 下载通用模板:
+      GET /repos/{owner}/device-skills/contents/{type}/SKILL.md
+   c. 下载失败 → 自动生成 SKILL.md
+4. 保存到 devices/ 目录
+5. 返回初始化结果
+```
+
+### 设备识别规则
+
+从 HA 实体 attributes 中提取:
+- `device_class` → 设备类型
+- `manufacturer` → 厂商
+- `model` 或 `model_id` → 型号
+
+### 匹配优先级
+
+1. `{device_type}/{manufacturer}-{model}/SKILL.md` (精确匹配)
+2. `{device_type}/SKILL.md` (通用模板)
+
+### 自动生成规则
+
+找不到匹配时，根据 entity_id 智能生成:
+
+```yaml
+---
+name: {manufacturer}-{model}-sensor
+description: 自动生成的 {manufacturer} {model} 传感器 Skill
+---
+# 根据 entity_id pattern 生成 API 调用
+# 例如: sensor.xxx_temperature → 温度传感器
 ```
 
 ## 配置说明
@@ -84,54 +134,25 @@ device_skills_repo: "https://github.com/sidhu-master/device-skills"
 - "关闭卧室灯"
 
 ### 设备管理
-- "发现新设备"
+- "发现新设备" - 重新扫描
 - "列出所有传感器"
 - "检查 skills 更新"
 
 ### 重新配置
 - "重新配置" - 重新引导设置
 
-## 按需下载流程
-
-```
-1. 用户询问设备
-2. HA Manager 查询 HA 获取设备信息 (manufacturer + model)
-3. 请求 GitHub API:
-   GET /repos/{owner}/device-skills/contents/{device_type}/{manufacturer}-{model}/SKILL.md
-4. 找到 → 下载使用
-5. 找不到 → 使用通用模板
-```
-
-### 匹配优先级
-
-1. `{device_type}/{manufacturer}-{model}/SKILL.md` (精确匹配)
-2. `{device_type}/SKILL.md` (通用模板)
-
 ## 脚本工具
+
+### init_devices.sh
+自动初始化设备 Skills:
+```bash
+./scripts/init_devices.sh
+```
 
 ### check_config.sh
 检查配置是否完整:
 ```bash
 ./scripts/check_config.sh
-```
-
-## HA API 调用示例
-
-```bash
-# 获取所有设备状态
-curl -H "Authorization: Bearer $HA_TOKEN" "$HA_URL/api/states"
-
-# 获取设备详情（包含 manufacturer, model）
-curl -H "Authorization: Bearer $HA_TOKEN" "$HA_URL/api/devices"
-
-# 获取单个实体状态
-curl -H "Authorization: Bearer $HA_TOKEN" "$HA_URL/api/states/sensor.xxx"
-
-# 调用服务
-curl -H "Authorization: Bearer $HA_TOKEN" -X POST \
-  -H "Content-Type: application/json" \
-  -d '{"entity_id": "switch.xxx"}' \
-  "$HA_URL/api/services/switch/turn_on"
 ```
 
 ## 项目结构
@@ -141,7 +162,11 @@ Home-Assistant-Manager/
 ├── README.md              # 项目说明
 ├── config_example.yaml    # 配置模板
 ├── config.yaml           # 运行时配置 (自动生成)
-└── devices/
-    └── ha-manager/
-        └── SKILL.md     # 主技能
+├── devices/              # 设备 Skills (自动生成)
+│   ├── temperature-sensor/
+│   │   └── mijia-t8/
+│   └── ...
+└── scripts/
+    ├── init_devices.sh   # 初始化脚本
+    └── check_config.sh  # 配置检查
 ```
