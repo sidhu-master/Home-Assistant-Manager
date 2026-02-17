@@ -17,4 +17,4 @@ curl -s -H "Authorization: Bearer $HA_TOKEN" "http://192.168.31.154:8123/api/sta
 ## Entity ID
 
 - **实体**: `sensor.jdjz_kj410_0072_pm25_density`
-- **状态**: 47.0
+- **状态**: 102.0
