@@ -1,5 +1,9 @@
 # Home Assistant Manager
 
+[English](README-en.md) / [中文](README.md)
+
+---
+
 OpenClaw's HA Smart Device Manager.
 
 ## Features

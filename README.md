@@ -1,5 +1,9 @@
 # Home Assistant Manager
 
+[English](README-en.md) / 中文
+
+---
+
 OpenClaw 的 HA 智能设备管理器。
 
 ## 功能
