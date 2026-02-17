@@ -9,8 +9,8 @@ OpenClaw's HA Smart Device Manager.
 ## Features
 
 - 🎯 **Auto-discover HA devices** - Identify manufacturer, model, entities
-- 🧠 **Intelligent scheduling** - Understand user intent, dispatch to device Skills
-- ⚡ **Auto initialization** - Automatically download all matching Skills after first config
+- 🧠 **Intelligent scheduling** - Understand user intent, route to device Skills
+- ⚡ **Auto initialization** - Auto-download all matching Skills after first config
 - 🔄 **Manual update** - Users can actively check and update Skills
 - 🤖 **Auto-install** - First use auto-guides configuration
 
@@ -21,33 +21,33 @@ HA Manager (Agent Skill)
     │
     ├── Auto-discover HA devices
     ├── Identify device type, manufacturer, model
-    ├── Auto initialize Skills after first config
-    ├── Manual update Skills (user triggered)
-    └── Schedule corresponding Device Skills
+    ├── Auto-initialize Skills (first config)
+    ├── Manual update Skills (user trigger)
+    └── Route to Device Skills
     
-Device Skills (Device Skills)
+Device Skills
     │
-    └── Each device has its own Skill, shareable and reusable
+    └── Each device has its own Skill, shareable
 ```
 
 ## Quick Start
 
-### Installation
+### Install
 
-Send repository URL to OpenClaw:
+Send repo address to OpenClaw:
 
 ```
 Install https://github.com/sidhu-master/Home-Assistant-Manager
 ```
 
-### First-time Configuration
+### First-time Config
 
 OpenClaw will auto-guide:
 
 ```
 1. Please provide your Home Assistant URL
 2. Please provide your HA Token
-3. ✅ Config complete, auto initialize Skills
+3. ✅ Config complete, auto-initializing Skills
 ```
 
 ### Get HA Token
@@ -61,14 +61,14 @@ OpenClaw will auto-guide:
 
 ```
 Home-Assistant-Manager/
-├── README.md              # Project documentation (Chinese)
+├── README.md              # Documentation
 ├── README-en.md           # English documentation
-├── config_example.yaml    # Configuration template
-├── config.yaml           # Runtime config (auto-generated)
+├── config_example.yaml    # Config template
+├── config.yaml            # Runtime config (auto-generated)
 ├── devices/              # Local Skills (auto-generated)
 └── scripts/
     ├── init_devices.sh   # Initialize Skills
-    └── check_config.sh  # Check configuration
+    └── check_config.sh  # Check config
 ```
 
 ## Auto Initialization Flow
@@ -85,15 +85,15 @@ Home-Assistant-Manager/
 
 ### Matching Priority
 
-1. `device-skills/{type}/{manufacturer}-{model}/SKILL.md` (exact match)
-2. `device-skills/{type}/SKILL.md` (generic template)
+1. `device-skills/{type}/{manufacturer}-{model}/SKILL.md` (exact)
+2. `device-skills/{type}/SKILL.md` (generic)
 
 ## Manual Update Skills
 
 Users can actively update Skills:
 
 ```
-"Check for Skills updates"
+"Check Skills updates"
 "Update device Skills"
 ```
 
@@ -105,7 +105,7 @@ Or run:
 
 ## Device Skills Repository
 
-Use separate [device-skills](https://github.com/sidhu-master/device-skills) repository:
+Use separate [device-skills](https://github.com/sidhu-master/device-skills) repo:
 
 | Device Type | Directory | Description |
 |-------------|-----------|-------------|
@@ -117,22 +117,13 @@ Use separate [device-skills](https://github.com/sidhu-master/device-skills) repo
 | Sensor | [sensor/](https://github.com/sidhu-master/device-skills/tree/main/sensor) | Generic sensor |
 | Lock | [lock/](https://github.com/sidhu-master/device-skills/tree/main/lock) | Lock control |
 
-## Adding New Device Skills
-
-Add to [device-skills](https://github.com/sidhu-master/device-skills) repository:
-
-1. Create directory by device type
-2. Add generic `SKILL.md` template
-3. For specific models, create subdirectory `manufacturer-model/`
-
-See [device-skills/README.md](https://github.com/sidhu-master/device-skills)
-
 ## Usage Examples
 
 - "What devices do I have?"
 - "What's the temperature now?"
 - "Turn up the air purifier"
-- "Check for Skills updates"
+- "Turn down the air purifier"
+- "Check Skills updates"
 
 ## FAQ
 
@@ -140,10 +131,10 @@ See [device-skills/README.md](https://github.com/sidhu-master/device-skills)
 A: Run `./scripts/init_devices.sh` or say "Discover new devices"
 
 ### Q: How to update Skills?
-A: Say "Check for Skills updates" or re-run initialization script
+A: Say "Check Skills updates" or re-run init script
 
 ### Q: What if device has no matching Skill?
-A: Will use generic template, or auto-generate SKILL.md
+A: Auto-use generic template or auto-generate SKILL.md
 
 ## Development
 

@@ -10,8 +10,7 @@ description: Home Assistant 设备管理器。自动发现 HA 设备、智能调
 - 🔍 **设备发现**: 自动扫描 HA 中的所有设备，识别厂商和型号
 - 🧠 **智能调度**: 理解用户意图，分发给对应设备 Skills
 - ⚡ **自动初始化**: 配置完成后自动下载/生成所有设备 Skills
-- 📦 **按需下载**: 根据设备型号从远程仓库动态下载 Skill
-- 🔄 **版本检查**: 检查远程仓库更新，提醒用户
+- 🔄 **手动更新**: 用户可主动检查并更新 Skills
 - 🤖 **自动安装**: 首次使用自动引导配置，缺少参数时询问用户
 
 ## 快速开始
@@ -50,7 +49,7 @@ HA Manager: 🔄 验证连接...
           - 发现设备: 米家温湿度计 T8
             → 下载 temperature-sensor/mijia-t8
           - 发现设备: 空气净化器
-            → 使用通用模板 climate
+            → 使用通用模板
           
           ✅ 初始化完成！共 2 个设备
 ```
@@ -66,38 +65,32 @@ HA Manager: 🔄 验证连接...
    - manufacturer (厂商)
    - model (型号)
 3. 对每个设备:
-   a. 请求 GitHub API 精确匹配:
-      GET /repos/{owner}/device-skills/contents/{type}/{manufacturer}-{model}/SKILL.md
-   b. 找不到 → 下载通用模板:
-      GET /repos/{owner}/device-skills/contents/{type}/SKILL.md
+   a. 请求 GitHub API 精确匹配
+   b. 找不到 → 下载通用模板
    c. 下载失败 → 自动生成 SKILL.md
 4. 保存到 devices/ 目录
 5. 返回初始化结果
 ```
-
-### 设备识别规则
-
-从 HA 实体 attributes 中提取:
-- `device_class` → 设备类型
-- `manufacturer` → 厂商
-- `model` 或 `model_id` → 型号
 
 ### 匹配优先级
 
 1. `{device_type}/{manufacturer}-{model}/SKILL.md` (精确匹配)
 2. `{device_type}/SKILL.md` (通用模板)
 
-### 自动生成规则
+## 手动更新 Skills
 
-找不到匹配时，根据 entity_id 智能生成:
+用户可以主动更新 Skills：
 
-```yaml
----
-name: {manufacturer}-{model}-sensor
-description: 自动生成的 {manufacturer} {model} 传感器 Skill
----
-# 根据 entity_id pattern 生成 API 调用
-# 例如: sensor.xxx_temperature → 温度传感器
+```
+"检查 Skills 更新"
+"更新设备 Skills"
+"发现新设备"
+```
+
+或运行脚本：
+
+```bash
+./scripts/init_devices.sh
 ```
 
 ## 配置说明
@@ -132,11 +125,13 @@ device_skills_repo: "https://github.com/sidhu-master/device-skills"
 - "打开空气净化器"
 - "把空调调到 26 度"
 - "关闭卧室灯"
+- "空气净化器大一点" (每次调高一档)
+- "空气净化器小一点" (每次调低一档)
 
 ### 设备管理
 - "发现新设备" - 重新扫描
+- "检查 Skills 更新"
 - "列出所有传感器"
-- "检查 skills 更新"
 
 ### 重新配置
 - "重新配置" - 重新引导设置
@@ -144,7 +139,7 @@ device_skills_repo: "https://github.com/sidhu-master/device-skills"
 ## 脚本工具
 
 ### init_devices.sh
-自动初始化设备 Skills:
+自动初始化/更新设备 Skills:
 ```bash
 ./scripts/init_devices.sh
 ```
@@ -164,7 +159,10 @@ Home-Assistant-Manager/
 ├── config.yaml           # 运行时配置 (自动生成)
 ├── devices/              # 设备 Skills (自动生成)
 │   ├── temperature-sensor/
-│   │   └── mijia-t8/
+│   │   ├── xiaomi-t8/
+│   │   └── unknown-temperature/
+│   ├── fan/
+│   │   └── jdjz-kj410/
 │   └── ...
 └── scripts/
     ├── init_devices.sh   # 初始化脚本
