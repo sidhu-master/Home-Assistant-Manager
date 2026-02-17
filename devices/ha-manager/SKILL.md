@@ -9,15 +9,51 @@ description: Home Assistant 设备管理器。自动发现 HA 设备、智能调
 
 - 🔍 **设备发现**: 自动扫描 HA 中的所有设备，识别厂商和型号
 - 🧠 **智能调度**: 理解用户意图，分发给对应设备 Skills
-- 📦 **按需下载**: 根据设备型号从远程仓库动态下载对应 Skill，不需要预先 clone 整个仓库
+- 📦 **按需下载**: 根据设备型号从远程仓库动态下载对应 Skill
 - 🔄 **版本检查**: 检查远程仓库更新，提醒用户
 
-## 配置
+## 快速开始
 
-需要配置以下环境变量：
-- `HA_URL`: Home Assistant 地址 (例如 http://192.168.56.1:8123)
-- `HA_TOKEN`: Home Assistant Long-Lived Access Token
-- `DEVICE_SKILLS_REPO`: 设备 Skills 仓库地址 (例如 https://github.com/sidhu-master/device-skills)
+### 1. 克隆项目
+
+```bash
+git clone https://github.com/sidhu-master/Home-Assistant-Manager.git
+cd Home-Assistant-Manager
+```
+
+### 2. 配置
+
+```bash
+cp config.example.yaml config.yaml
+# 编辑 config.yaml，填入你的 HA 地址和 Token
+```
+
+### 3. 检查配置
+
+```bash
+./scripts/check_config.sh
+```
+
+### 4. 使用
+
+将 `devices/ha-manager/SKILL.md` 内容配置为 OpenClaw Skill。
+
+## 配置说明
+
+在 `config.yaml` 中配置：
+
+```yaml
+# Home Assistant 连接 (必填)
+ha:
+  url: "http://192.168.56.1:8123"
+  token: "your-ha-long-lived-token"
+
+# 设备 Skills 仓库 (可选，默认 sidhu-master/device-skills)
+device_skills_repo: "https://github.com/sidhu-master/device-skills"
+
+# 本地设备配置 (可选)
+devices: {}
+```
 
 ## 使用方法
 
@@ -39,8 +75,8 @@ description: Home Assistant 设备管理器。自动发现 HA 设备、智能调
 ## 按需下载流程
 
 ```
-1. 获取 HA 设备信息 (manufacturer + model)
-2. 判断设备类型 (sensor, light, switch, climate...)
+1. 用户询问设备
+2. HA Manager 查询 HA 获取设备信息 (manufacturer + model)
 3. 请求 GitHub API:
    GET /repos/{owner}/device-skills/contents/{device_type}/{manufacturer}-{model}/SKILL.md
 4. 找到 → 下载使用
@@ -48,33 +84,18 @@ description: Home Assistant 设备管理器。自动发现 HA 设备、智能调
    GET /repos/{owner}/device-skills/contents/{device_type}/SKILL.md
 ```
 
-### 匹配规则
+### 匹配优先级
 
-目录结构:
-```
-device-skills/
-├── temperature-sensor/      # 设备类型
-│   ├── SKILL.md            # 通用模板
-│   ├── mijia-t8/           # 具体型号
-│   │   └── SKILL.md
-│   └── aqara-t1/
-│       └── SKILL.md
-├── light/
-├── switch/
-└── ...
-```
-
-匹配优先级:
 1. `{device_type}/{manufacturer}-{model}/SKILL.md` (精确匹配)
 2. `{device_type}/SKILL.md` (通用模板)
 
-## 工作流程
+## 脚本工具
 
-1. 接收用户指令
-2. 从 HA 获取设备信息（厂商、型号、实体ID）
-3. 按需从远程仓库下载对应 Skill
-4. 调用 Skill 操作 HA API
-5. 返回结果给用户
+### check_config.sh
+检查配置是否完整:
+```bash
+./scripts/check_config.sh
+```
 
 ## HA API 调用示例
 
@@ -93,14 +114,4 @@ curl -H "Authorization: Bearer $HA_TOKEN" -X POST \
   -H "Content-Type: application/json" \
   -d '{"entity_id": "switch.xxx"}' \
   "$HA_URL/api/services/switch/turn_on"
-```
-
-## GitHub API 调用示例
-
-```bash
-# 获取设备类型目录
-curl -s https://api.github.com/repos/sidhu-master/device-skills/contents/temperature-sensor
-
-# 下载具体型号的 SKILL
-curl -s https://raw.githubusercontent.com/sidhu-master/device-skills/main/temperature-sensor/mijia-t8/SKILL.md
 ```
