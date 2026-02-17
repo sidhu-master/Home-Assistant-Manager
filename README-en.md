@@ -10,8 +10,9 @@ OpenClaw's HA Smart Device Manager.
 
 - 🎯 Auto-discover HA devices (identify manufacturer + model)
 - 🧠 Intelligent device Skills scheduling
-- 📦 **On-demand download** — Dynamically download Skills based on device model from remote repository
+- 📦 **On-demand download** — Dynamically download Skills based on device model
 - 🔄 Version check — Check for remote repository updates
+- 🤖 **Auto-install** — First use auto-guides configuration, asks user for missing params
 
 ## Architecture
 
@@ -21,12 +22,51 @@ HA Manager (Agent Skill)
     ├── Auto-discover HA devices
     ├── Identify device type, manufacturer, model
     ├── On-demand download from remote repository
+    ├── Auto-guide configuration (first use)
     └── Schedule corresponding Device Skills
     
 Device Skills (Device Skills)
     │
     └── Each device has its own Skill, shareable and reusable
 ```
+
+## Quick Start
+
+### Option 1: Install via repo URL
+
+```
+User: "Install https://github.com/sidhu-master/Home-Assistant-Manager"
+```
+
+### Option 2: Direct usage (auto-guides first time)
+
+```
+User: "What devices do I have?"
+
+HA Manager: 📦 First time setup needed...
+          Please provide your Home Assistant URL:
+```
+
+## First Use - Smart Install Guide
+
+When HA is not configured, automatically enters install mode:
+
+```
+1. User sends any command
+2. HA Manager detects not configured
+3. Asks: "Please provide your Home Assistant URL"
+4. User replies with URL
+5. Asks: "Please provide your HA Token"
+6. User replies with token
+7. ✅ Setup complete, ready to use
+```
+
+### Get HA Token
+
+1. Open Home Assistant
+2. Click avatar → Security
+3. Create Long-Lived Access Token
+4. Copy Token to HA Manager
 
 ## Project Structure
 
@@ -35,33 +75,12 @@ Home-Assistant-Manager/
 ├── README.md              # Project documentation (Chinese)
 ├── README-en.md           # English documentation
 ├── config_example.yaml    # Configuration template
+├── config.yaml            # Runtime config (auto-generated)
 ├── .gitignore
-└── devices/               # Local device Skills (optional)
-    ├── ha-manager/       # HA Manager main skill
-    ├── temp-humidity-sensor/
-    └── air-purifier/
+└── devices/
+    └── ha-manager/
+        └── SKILL.md     # Main skill (includes install guide)
 ```
-
-## Quick Start
-
-### 1. Configure HA Manager
-
-Configure `devices/ha-manager/SKILL.md` content as an OpenClaw Skill.
-
-### 2. Configure Environment Variables
-
-```bash
-HA_URL=http://192.168.56.1:8123
-HA_TOKEN=your-ha-long-lived-token
-DEVICE_SKILLS_REPO=https://github.com/sidhu-master/device-skills
-```
-
-### 3. Usage
-
-- "有哪些设备？" / "What devices do I have?"
-- "现在温度多少？" / "What's the temperature now?"
-- "打开空气净化器" / "Turn on the air purifier"
-- "检查 skills 更新" / "Check for skills updates"
 
 ## On-Demand Download Flow
 
