@@ -4,9 +4,10 @@ OpenClaw 的 HA 智能设备管理器。
 
 ## 功能
 
-- 🎯 自动发现 HA 设备
+- 🎯 自动发现 HA 设备（识别厂商+型号）
 - 🧠 智能调度设备 Skills
-- 📦 设备 Skills 包管理（一键安装、分享）
+-按需下载** 📦 ** — 根据设备型号从远程仓库动态下载 Skill，不需预先 clone
+- 🔄 版本检查 — 检查远程仓库更新
 
 ## 架构
 
@@ -14,7 +15,8 @@ OpenClaw 的 HA 智能设备管理器。
 HA Manager (Agent Skill)
     │
     ├── 自动发现 HA 设备
-    ├── 识别设备类型
+    ├── 识别设备类型、厂商、型号
+    ├── 按需从远程仓库下载 Skill
     └── 调度对应 Device Skills
     
 Device Skills (设备技能)
@@ -27,60 +29,71 @@ Device Skills (设备技能)
 ```
 Home-Assistant-Manager/
 ├── README.md              # 项目说明
-├── config.example.yaml    # 配置模板
+├── README-en.md           # English documentation
+├── config_example.yaml    # 配置模板
 ├── .gitignore
-├── devices/               # 设备 Skills 仓库
-│   ├── README.md         # 设备索引
-│   ├── ha-manager/       # HA Manager 主技能
-│   ├── temp-humidity-sensor/  # 温湿度传感器
-│   └── air-purifier/     # 空气净化器
-└── docs/                 # 文档
+└── devices/               # 本地设备 Skills (可选)
+    ├── ha-manager/       # HA Manager 主技能
+    ├── temp-humidity-sensor/
+    └── air-purifier/
 ```
 
 ## 快速开始
 
-### 1. 安装 HA Manager
+### 1. 配置 HA Manager
 
 将 `devices/ha-manager/SKILL.md` 内容配置为 OpenClaw Skill。
 
-### 2. 配置 HA 连接
+### 2. 配置环境变量
 
-在环境变量或 config.yaml 中配置：
-```yaml
-ha:
-  url: "http://192.168.56.1:8123"
-  token: "your-ha-token"
+```bash
+HA_URL=http://192.168.56.1:8123
+HA_TOKEN=your-ha-long-lived-token
+DEVICE_SKILLS_REPO=https://github.com/sidhu-master/device-skills
 ```
 
-### 3. 配置设备
-
-在 config.yaml 中配置你的设备 entity_id：
-```yaml
-devices:
-  temperature_sensor:
-    - entity_id: "sensor.xxx"
-      humidity_entity_id: "sensor.xxx"
-  air_purifier:
-    - switch_entity_id: "switch.xxx"
-      fan_entity_id: "fan.xxx"
-```
-
-### 4. 使用
+### 3. 使用
 
 - "有哪些设备？"
 - "现在温度多少？"
 - "打开空气净化器"
+- "检查 skills 更新"
 
-## 设备 Skills
+## 按需下载流程
+
+```
+1. 用户询问设备
+2. HA Manager 查询 HA 获取设备信息 (manufacturer + model)
+3. 请求 GitHub API 查找匹配的 SKILL.md
+4. 找到 → 下载使用；找不到 → 使用通用模板
+```
+
+### 匹配优先级
+
+1. `device-skills/{type}/{manufacturer}-{model}/SKILL.md` (精确匹配)
+2. `device-skills/{type}/SKILL.md` (通用模板)
+
+## 设备 Skills 仓库
+
+使用独立的 [device-skills](https://github.com/sidhu-master/device-skills) 仓库：
 
 | 设备类型 | 目录 | 说明 |
 |----------|------|------|
-| 温湿度传感器 | [devices/temp-humidity-sensor](devices/temp-humidity-sensor/) | 读取温湿度、电池 |
-| 空气净化器 | [devices/air-purifier](devices/air-purifier/) | 控制开关、风速、模式 |
+| 温度湿度传感器 | temperature-sensor/ | 读取温湿度、电池 |
+| 灯 | light/ | 控制开关、亮度 |
+| 开关 | switch/ | 控制开关 |
+| 空调 | climate/ | 控制温度、模式 |
+| 传感器 | sensor/ | 通用传感器 |
 
-## 添加新设备
+## 添加新设备 Skill
 
-详见 [devices/README.md](devices/README.md)
+在 [device-skills](https://github.com/sidhu-master/device-skills) 仓库添加：
+
+1. 按设备类型创建目录
+2. 添加通用 `SKILL.md` 模板
+3. 如有具体型号，创建子目录 `厂商-型号/`
+
+详见 [device-skills/README.md](https://github.com/sidhu-master/device-skills)
 
 ## 开发
 
