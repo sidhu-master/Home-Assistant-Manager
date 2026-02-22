@@ -1,44 +1,34 @@
 ---
-name: temperature-sensor
-description: 通用温度湿度传感器Skill。读取HA中温度、湿度传感器数据。需要配置具体的entity_id。
+name: xiaomi-t8-temperature-sensor
+description: 米家温湿度计 T8
+manufacturer: xiaomi
+model: t8
+device_type: temperature-sensor
 ---
 
-# Temperature & Humidity Sensor Skill
+# 米家温湿度计 T8
 
-## Quick Start
+## 设备信息
 
-读取 HA API 获取传感器数据：
+- **温度**: sensor.miaomiaoce_t8_e0e5_temperature
+- **湿度**: sensor.miaomiaoce_t8_e0e5_relative_humidity
+- **电池**: sensor.miaomiaoce_t8_e0e5_battery_level
+
+## 查询命令
 
 ```bash
-# 温度
-curl -s -H "Authorization: Bearer $HA_TOKEN" \
-  "$HA_URL/api/states/$ENTITY_TEMPERATURE"
+# 获取温度
+curl -s -H "Authorization: Bearer $HA_TOKEN" "$HA_URL/api/states/sensor.miaomiaoce_t8_e0e5_temperature"
 
-# 湿度  
-curl -s -H "Authorization: Bearer $HA_TOKEN" \
-  "$HA_URL/api/states/$ENTITY_HUMIDITY"
+# 获取湿度
+curl -s -H "Authorization: Bearer $HA_TOKEN" "$HA_URL/api/states/sensor.miaomiaoce_t8_e0e5_relative_humidity"
 
-# 电池（如有）
-curl -s -H "Authorization: Bearer $HA_TOKEN" \
-  "$HA_URL/api/states/$ENTITY_BATTERY"
+# 获取电池
+curl -s -H "Authorization: Bearer $HA_TOKEN" "$HA_URL/api/states/sensor.miaomiaoce_t8_e0e5_battery_level"
 ```
-
-## 配置
-
-需要在 TOOLS.md 或环境变量中配置：
-- `HA_URL`: Home Assistant 地址
-- `HA_TOKEN`: Home Assistant Long-Lived Access Token
-- `ENTITY_TEMPERATURE`: 温度传感器 entity_id（例如 sensor.xxx_temperature）
-- `ENTITY_HUMIDITY`: 湿度传感器 entity_id
-- `ENTITY_BATTERY`: 电池传感器 entity_id（可选）
 
 ## 使用示例
 
 - "现在温度多少？"
-- "湿度是多少？"
-- "室内环境怎么样？"
-- "电池还有多少？"
-
-## 适配说明
-
-此为通用模板。匹配到具体设备型号后，会自动填充具体的 entity_id。
+- "湿度怎么样？"
+- "温湿度计电池还有多少？"

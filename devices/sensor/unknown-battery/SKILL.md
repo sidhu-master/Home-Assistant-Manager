@@ -11,10 +11,10 @@ device_type: sensor
 ## Quick Start
 
 ```bash
-curl -s -H "Authorization: Bearer $HA_TOKEN" "http://192.168.31.154:8123/api/states/sensor.xiaomi_pi2001_0676_battery_level"
+curl -s -H "Authorization: Bearer $HA_TOKEN" "http://192.168.56.1:8123/api/states/sensor.lumi_bmcn03_7502_battery_level"
 ```
 
 ## Entity ID
 
-- **实体**: `sensor.xiaomi_pi2001_0676_battery_level`
+- **实体**: `sensor.lumi_bmcn03_7502_battery_level`
 - **状态**: unavailable

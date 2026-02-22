@@ -11,7 +11,7 @@ device_type: router
 ## Quick Start
 
 ```bash
-curl -s -H "Authorization: Bearer $HA_TOKEN" "http://192.168.31.154:8123/api/states/sensor.xiaomi_ra80_fdf7_router"
+curl -s -H "Authorization: Bearer $HA_TOKEN" "http://192.168.56.1:8123/api/states/sensor.xiaomi_ra80_fdf7_router"
 ```
 
 ## Entity ID

@@ -11,7 +11,7 @@ device_type: lock
 ## Quick Start
 
 ```bash
-curl -s -H "Authorization: Bearer $HA_TOKEN" "http://192.168.31.154:8123/api/states/sensor.lumi_bmcn03_7502_lock_key_id"
+curl -s -H "Authorization: Bearer $HA_TOKEN" "http://192.168.56.1:8123/api/states/sensor.lumi_bmcn03_7502_lock_key_id"
 ```
 
 ## Entity ID
